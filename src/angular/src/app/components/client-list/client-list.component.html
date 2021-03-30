@@ -1,0 +1,85 @@
+<div class="list row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Search
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label>First Name</label>
+                        <input type="text" class="form-control" [(ngModel)]="firstNameSearch" placeholder="First Name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Last Name</label>
+                        <input type="text" class="form-control" [(ngModel)]="lastNameSearch" placeholder="Last Name">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label>Email</label>
+                        <input type="text" class="form-control" [(ngModel)]="emailSearch" placeholder="Email">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <button type="button" class="btn btn-info mr-3" type="button" (click)="searchClient()">
+                            Search
+                        </button>
+                        <button type="button" class="btn btn-info" type="button" (click)="refreshList()">
+                            Clear
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                Clients
+            </div>
+            <div class="card-body">
+                <div class="form-row">
+                    <div class="col-md-5">
+
+                        <h4>Client List</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item" *ngFor="let client of clients; let i = index"
+                                [class.active]="i == currentIndex" (click)="setActiveClient(client, i)">
+                                {{ client.lastName }}
+                            </li>
+                        </ul>
+                        <br>
+                        <strong>Total clients:</strong> {{ totalClients }}
+                    </div>
+                    <div class="col-md-6 offset-1">
+                        <div *ngIf="currentClient">
+                            <h4>Client</h4>
+                            <div>
+                                <label><strong>First Name:</strong></label> {{ currentClient.firstName }}
+                            </div>
+                            <div>
+                                <label><strong>Last Name:</strong></label>
+                                {{ currentClient.lastName }}
+                            </div>
+                            <div>
+                                <label><strong>Email:</strong></label>
+                                {{ currentClient.email }}
+                            </div>
+                            <div>
+                                <label><strong>Status:</strong></label>
+                                {{ currentClient.active ? "Active" : "Not Active" }}
+                            </div>
+
+                            <a class="badge badge-warning" routerLink="/clients/{{ currentClient.id }}">
+                                Edit
+                            </a>
+                        </div>
+
+                        <div *ngIf="!currentClient">
+                            <br />
+                            <p>Please click on a Client...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
