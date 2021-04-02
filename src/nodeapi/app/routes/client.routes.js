@@ -1,6 +1,7 @@
 module.exports = app => {
     let clients = require("../controllers/client.controller");
     let router = require("express").Router();
+    
 
     /**
      * @swagger
@@ -99,7 +100,9 @@ module.exports = app => {
  *                   description: The error message
  *                   example: "Email already in use"
 */
-    router.post("/", clients.create);
+    router.post("/",
+    clients.validate('createClient'),
+    clients.create);
 
     /**
  * @swagger
@@ -203,7 +206,9 @@ module.exports = app => {
      *                   description: The error message
      *                   example: "Error. Client not updated. Check if id is valid"
     */
-    router.put("/:id", clients.update);
+    router.put("/:id", 
+    clients.validate('clientUpdate'),
+    clients.update);
 
     /**
  * @swagger

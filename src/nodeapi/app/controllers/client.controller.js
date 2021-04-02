@@ -1,28 +1,38 @@
 const db = require("../models");
 const Client = db.clients;
 const Op = db.Sequelize.Op;
+const { check, validationResult } = require('express-validator');
+
+
+exports.validate = (method) => {
+    switch (method) {
+        case 'createClient': {
+            return [
+                check('firstName').isString().withMessage({ message: 'Favor digite um nome valido' }),
+                check('lastName').isString().withMessage({ message: 'Favor digite um sobrenome valido' }),
+                check('email').isEmail().withMessage({ message: 'Favor digite um e-mail valido' }),
+            ]
+        }
+        case 'clientUpdate': {
+            return [
+                check('firstName').isString().withMessage({ message: 'Favor digite um nome valido' }),
+                check('lastName').isString().withMessage({ message: 'Favor digite um sobrenome valido' }),
+                // email must be an email
+                check('email').isEmail().withMessage({ message: 'Favor digite um e-mail valido' }),
+                check('active').isBoolean().withMessage({ message: 'Favor digite o status' }),
+            ]
+        }
+
+    }
+}
+
 
 exports.create = async (req, res) => {
     try {
-        let errors = [];
-
-        if (!req.body.firstName) {
-            errors.push("First Name cannot be empty");
-        }
-
-        if (!req.body.lastName) {
-            errors.push("Last Name cannot be empty");
-        }
-
-        if (!req.body.email) {
-            errors.push("Email cannot be empty");
-        }
-
-        if (errors.length > 0) {
-            res.status(400).send({
-                message: "Validation errors has occurred",
-                errors: errors
-            });
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
         }
 
         let [client, created] = await Client.findOrCreate({
@@ -81,29 +91,11 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-        let errors = [];
 
-        if (!req.body.firstName) {
-            errors.push("First Name cannot be empty");
-        }
-
-        if (!req.body.lastName) {
-            errors.push("Last Name cannot be empty");
-        }
-
-        if (!req.body.email) {
-            errors.push("Email cannot be empty");
-        }
-
-        if (typeof req.body.active === 'undefined') {
-            errors.push("Active flag cannot be empty");
-        }
-
-        if (errors.length > 0) {
-            res.status(400).send({
-                message: "Validation errors has occurred",
-                errors: errors
-            });
+        // Finds the validation errors in this request and wraps them in an object with handy functions
+        const errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            return res.status(400).json({ errors: errors.array() });
         }
 
         let id = req.params.id;
