@@ -15,6 +15,7 @@ exports.validate = (method) => {
         }
         case 'clientUpdate': {
             return [
+                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' }),
                 check('firstName').isString().withMessage({ message: 'Favor digite um nome valido' }),
                 check('lastName').isString().withMessage({ message: 'Favor digite um sobrenome valido' }),
                 // email must be an email
@@ -22,7 +23,16 @@ exports.validate = (method) => {
                 check('active').isBoolean().withMessage({ message: 'Favor digite o status' }),
             ]
         }
-
+        case 'deleteClient': {
+            return [
+                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' })
+            ]
+        }
+        case 'findOneClient': {
+            return [
+                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' })
+            ]
+        }
     }
 }
 
@@ -76,6 +86,12 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
     try {
+         // Finds the validation errors in this request and wraps them in an object with handy functions
+         const errors = validationResult(req);
+         if (!errors.isEmpty()) {
+             return res.status(400).json({ errors: errors.array() });
+         }
+
         let id = req.params.id;
         let client = await Client.findByPk(id);
 
@@ -118,6 +134,13 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
+        
+         // Finds the validation errors in this request and wraps them in an object with handy functions
+         const errors = validationResult(req);
+         if (!errors.isEmpty()) {
+             return res.status(400).json({ errors: errors.array() });
+         }
+         
         let id = req.params.id;
 
         let deleted = await Client.destroy({
