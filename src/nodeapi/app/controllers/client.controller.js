@@ -1,50 +1,9 @@
 const db = require("../models");
 const Client = db.clients;
 const Op = db.Sequelize.Op;
-const { check, validationResult } = require('express-validator');
-
-
-exports.validate = (method) => {
-    switch (method) {
-        case 'createClient': {
-            return [
-                check('firstName').isString().withMessage({ message: 'Favor digite um nome valido' }),
-                check('lastName').isString().withMessage({ message: 'Favor digite um sobrenome valido' }),
-                check('email').isEmail().withMessage({ message: 'Favor digite um e-mail valido' }),
-            ]
-        }
-        case 'clientUpdate': {
-            return [
-                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' }),
-                check('firstName').isString().withMessage({ message: 'Favor digite um nome valido' }),
-                check('lastName').isString().withMessage({ message: 'Favor digite um sobrenome valido' }),
-                // email must be an email
-                check('email').isEmail().withMessage({ message: 'Favor digite um e-mail valido' }),
-                check('active').isBoolean().withMessage({ message: 'Favor digite o status' }),
-            ]
-        }
-        case 'deleteClient': {
-            return [
-                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' })
-            ]
-        }
-        case 'findOneClient': {
-            return [
-                check('id').exists().isInt({ gt: 0}).withMessage({ message: 'Favor digite um ID valido' })
-            ]
-        }
-    }
-}
-
 
 exports.create = async (req, res) => {
     try {
-        // Finds the validation errors in this request and wraps them in an object with handy functions
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
         let [client, created] = await Client.findOrCreate({
             where: { email: req.body.email }, defaults: {
                 firstName: req.body.firstName,
@@ -55,9 +14,9 @@ exports.create = async (req, res) => {
         });
 
         if (created) {
-            res.send({ message: "Client created", record: client });
+            res.send({ message: "Cliente criado", record: client });
         } else {
-            res.status(400).send({ message: "Email already in use" });
+            res.status(400).send({ message: "Email já está em uso" });
         }
     } catch (e) {
         return res.status(400).json({ message: e.message });
@@ -86,12 +45,6 @@ exports.findAll = async (req, res) => {
 
 exports.findOne = async (req, res) => {
     try {
-         // Finds the validation errors in this request and wraps them in an object with handy functions
-         const errors = validationResult(req);
-         if (!errors.isEmpty()) {
-             return res.status(400).json({ errors: errors.array() });
-         }
-
         let id = req.params.id;
         let client = await Client.findByPk(id);
 
@@ -107,13 +60,6 @@ exports.findOne = async (req, res) => {
 
 exports.update = async (req, res) => {
     try {
-
-        // Finds the validation errors in this request and wraps them in an object with handy functions
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
-        }
-
         let id = req.params.id;
 
         let updated = await Client.update(req.body, {
@@ -122,9 +68,9 @@ exports.update = async (req, res) => {
 
         if (updated == 1) {
             let client = await Client.findByPk(id);
-            res.send({ message: "Client updated", record: client });
+            res.send({ message: "Cliente atualizado", record: client });
         } else {
-            res.status(400).send({ message: "Error. Client not updated. Check if id is valid" });
+            res.status(400).send({ message: "Erro. Cliente não atualizado. Verifique se o ID é válido" });
         }
     }
     catch (e) {
@@ -134,13 +80,6 @@ exports.update = async (req, res) => {
 
 exports.delete = async (req, res) => {
     try {
-        
-         // Finds the validation errors in this request and wraps them in an object with handy functions
-         const errors = validationResult(req);
-         if (!errors.isEmpty()) {
-             return res.status(400).json({ errors: errors.array() });
-         }
-         
         let id = req.params.id;
 
         let deleted = await Client.destroy({
@@ -150,7 +89,7 @@ exports.delete = async (req, res) => {
         if (deleted == 1) {
             res.send({ message: "Client deleted" });
         } else {
-            res.status(400).send({ message: "Error. Client not deleted. Check if id is valid" });
+            res.status(400).send({ message: "Erro. Cliente não deletado. Verifique se o ID é válido" });
         }
     }
     catch (e) {

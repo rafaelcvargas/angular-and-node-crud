@@ -1,7 +1,7 @@
 module.exports = app => {
     let clients = require("../controllers/client.controller");
+    let clientValidator = require("../middlewares/validators/clientValidator");
     let router = require("express").Router();
-    
 
     /**
      * @swagger
@@ -101,8 +101,8 @@ module.exports = app => {
  *                   example: "Email already in use"
 */
     router.post("/",
-    clients.validate('createClient'),
-    clients.create);
+        clientValidator.validateCreateClient,
+        clients.create);
 
     /**
  * @swagger
@@ -157,9 +157,9 @@ module.exports = app => {
      *                 data:
      *                   $ref: '#/components/schemas/Client'
     */
-    router.get("/:id", 
-    clients.validate('findOneClient'),
-    clients.findOne);
+    router.get("/:id",
+        clientValidator.validateFindOneClient,
+        clients.findOne);
 
     /**
      * @swagger
@@ -208,9 +208,9 @@ module.exports = app => {
      *                   description: The error message
      *                   example: "Error. Client not updated. Check if id is valid"
     */
-    router.put("/:id", 
-    clients.validate('clientUpdate'),
-    clients.update);
+    router.put("/:id",
+        clientValidator.validateUpdateClient,
+        clients.update);
 
     /**
  * @swagger
@@ -251,9 +251,9 @@ module.exports = app => {
  *                   description: The error message
  *                   example: "Error. Client not deleted. Check if id is valid"
 */
-    router.delete("/:id", 
-    clients.validate('deleteClient'),
-    clients.delete);
+    router.delete("/:id",
+        clientValidator.validateDeleteClient,
+        clients.delete);
 
     // Router
     app.use("/api/clients", router);
